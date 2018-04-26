@@ -1,6 +1,25 @@
 <%include partials/header%>
 <html>
 	<body>
+		<%include partials/logout%>
 		<h1>HOme</h1>
+		<h3>Welcome <%=name%></h3>
+		<h2 id="community_header">Node Connect Statuses</h2>
+		<div id="community_statuses_div">
+			<ul class="user_statuses">
+			</ul>
+			<textarea name="" id="statuses_textarea" cols="50" rows="4"></textarea><br>
+			<button id="submit_status_button" type="submit">Post Status</button>
+		</div>
+
+		<script>
+	$("#submit_status_button").on('click', function() {
+		var textArea = document.querySelector('#statuses_textarea');
+		var data = textArea.value;
+		$.post("/user_status/create", {data: data}, function(response) {
+			console.log('yup');
+		})
+	})
+</script>
 	</body>
 </html>

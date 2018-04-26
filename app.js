@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require('mongoose').set('debug', true);
 const bodyParser = require('body-parser');
 const User = require('./models/users.js');
+const UserStatus = require('./models/user_status_model.js')
 
 mongoose.connect("mongodb://localhost/social");
 
@@ -15,7 +16,10 @@ app.use(require("express-session")({
 	name: "socialCookie",
 	secret: "Time to make a dopeass social network",
 	resave: false,
-	saveUninitialized: false
+	saveUninitialized: false,
+	cookie: {
+		path: "/"
+	}
 }));
 
 app.get('/', function(req, res) {
@@ -24,10 +28,11 @@ app.get('/', function(req, res) {
 
 app.get('/home', function(req, res) {
 	if(!req.session) {
-		alert('sorry')
+		console.log('nope')
 	} else {
-		console.log('yup')
-	res.render('home');
+	console.log('yup');
+	var name = req.session.name;
+	res.render('home', {name: name});
 	}
 })
 
@@ -63,14 +68,35 @@ app.post('/login', function(req, res) {
 			req.session.id = validUser._id;
 			req.session.name = validUser.name;
 			req.session.cookie.expires = false;
-			console.log(req.session)
 			console.log(validUser)
 			res.redirect('/home')
 		} else {
-			console.log('sorry!')
+			res.sendStatus(400);
 		}
 	})
 });
+
+app.post('/user_status/create', function(req, res) {
+	User.findOne({"email": req.session.email}, function(err, validUser) {
+		console.log(validUser);
+		var user_status = new UserStatus({
+			"user_email": req.session.email,
+			"user_status": req.body.data,
+			"name": req.session.name,
+			"profile_pic": validUser.user_profile.profile_pic
+		})
+		user_status.save(function(err, result) {
+			if(err) {
+				console.log('error with status creation')
+			}
+		})
+	})
+})
+
+app.post('/logout', function(req, res) {
+	req.session.destroy();
+	res.redirect('/')
+})
 
 app.listen(3000, function(req, res) {
 	console.log('social network running')

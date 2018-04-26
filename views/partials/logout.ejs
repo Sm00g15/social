@@ -1,0 +1,13 @@
+<button id="log_out_user" type="button">Log Out</button>
+
+<script>
+	$("#log_out_user").on('click', function() {
+		$.ajax({
+			method: "POST",
+			url: "/logout",
+			success: function() {
+				location.href = "/"
+			}
+		})
+	})
+</script>

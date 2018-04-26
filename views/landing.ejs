@@ -27,7 +27,7 @@
                 url: "/sign_up",
                 data: $("#sign_up_form").serialize(),
                 success: function(){
-                    console.log("success");
+                    location.href= "/home"
                 }
             })
         });
@@ -38,8 +38,11 @@
         		url: "/login",
         		data: $("#sign_in_form").serialize(),
         		success: function() {
-        			console.log('successful sign in')
-        		}
+        			location.href= "/home"
+        		},
+                error: function(err) {
+                    $("#usr_email, #usr_pwd").val('')
+                }
         	})
         });
     </script>
