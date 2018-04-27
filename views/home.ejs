@@ -9,26 +9,33 @@
 			<ul class="user_statuses">
 				<%user_statuses.forEach(function(status){ %>
 					<li class="clearfix">
-						<p><%=status.user_status%></p>
+						<img src="/profile_images/<%=status.profile_pic%>" alt="">
 						<div class="poster_name">
 							<%=status.name%>
 						</div>
+						<p><%=status.user_status%></p>
 					</li>
 					<h4><%=status.status_date%></h4>
 					<h4><%=status.name%></h4>
 				<%})%>
 			</ul>
 			<textarea name="" id="statuses_textarea" cols="50" rows="4"></textarea><br>
-			<button id="submit_status_button" type="submit">Post Status</button>
+			<button id="submit_status_button" onclick='submitStatus()' type="submit">Post Status</button>
 		</div>
 
 		<script>
-	$("#submit_status_button").on('click', function() {
+	function submitStatus() {
 		var textArea = document.querySelector('#statuses_textarea');
 		var data = textArea.value;
-		$.post("/user_status/create", {data: data}, function(response) {
-		})
-	})
+		$.post("/user_status/create", {data: data}, function(error, data) {
+			if(err) {
+				alert(err);
+			}
+			JSON.stringify(data);
+			alert('Data: ' + data + "\nStatus: " + status)
+		});
+	};
+
 </script>
 	</body>
 </html>

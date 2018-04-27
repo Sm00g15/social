@@ -11,6 +11,7 @@ app.use(bodyParser.urlencoded({
 	extended: true
 }));
 app.use(express.static('public'))
+app.use("/profile_images", express.static(__dirname + "/profile_images"));
 app.set('view engine', 'ejs');
 app.use(require("express-session")({
 	name: "socialCookie",
@@ -82,12 +83,11 @@ app.post('/login', function(req, res) {
 
 app.post('/user_status/create', function(req, res) {
 	User.find({"email": req.session.email}, function(err, validUser) {
-		console.log(validUser)
 		var user_status = new UserStatus({
 			"user_email": req.session.email,
 			"user_status": req.body.data,
 			"name": req.session.name,
-			// "profile_pic": validUser.user_profile.profile_pic
+			"profile_pic": validUser[0].user_profile.profile_pic
 		})
 		user_status.save(function(err, result) {
 			if(err) {
