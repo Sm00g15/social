@@ -7,6 +7,16 @@
 		<h2 id="community_header">Node Connect Statuses</h2>
 		<div id="community_statuses_div">
 			<ul class="user_statuses">
+				<%user_statuses.forEach(function(status){ %>
+					<li class="clearfix">
+						<p><%=status.user_status%></p>
+						<div class="poster_name">
+							<%=status.name%>
+						</div>
+					</li>
+					<h4><%=status.status_date%></h4>
+					<h4><%=status.name%></h4>
+				<%})%>
 			</ul>
 			<textarea name="" id="statuses_textarea" cols="50" rows="4"></textarea><br>
 			<button id="submit_status_button" type="submit">Post Status</button>
@@ -17,7 +27,6 @@
 		var textArea = document.querySelector('#statuses_textarea');
 		var data = textArea.value;
 		$.post("/user_status/create", {data: data}, function(response) {
-			console.log('yup');
 		})
 	})
 </script>

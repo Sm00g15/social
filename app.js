@@ -31,8 +31,12 @@ app.get('/home', function(req, res) {
 		console.log('nope')
 	} else {
 	console.log('yup');
-	var name = req.session.name;
-	res.render('home', {name: name});
+	var user_statuses;
+	UserStatus.find({}, function(err, statuses) {
+		user_statuses = statuses;
+		var name = req.session.name;
+	res.render('home', {name: name, user_statuses: user_statuses});
+	})
 	}
 })
 
@@ -77,13 +81,13 @@ app.post('/login', function(req, res) {
 });
 
 app.post('/user_status/create', function(req, res) {
-	User.findOne({"email": req.session.email}, function(err, validUser) {
-		console.log(validUser);
+	User.find({"email": req.session.email}, function(err, validUser) {
+		console.log(validUser)
 		var user_status = new UserStatus({
 			"user_email": req.session.email,
 			"user_status": req.body.data,
 			"name": req.session.name,
-			"profile_pic": validUser.user_profile.profile_pic
+			// "profile_pic": validUser.user_profile.profile_pic
 		})
 		user_status.save(function(err, result) {
 			if(err) {
