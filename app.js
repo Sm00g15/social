@@ -41,25 +41,25 @@ app.get('/home', function(req, res) {
 })
 
 app.get('/user_profile', function(req, res) {
-	if(!req.session) {
-		console.log('no req.session at /user_profile')
-	} else {
-		User.findOne({'email:': req.session.email}, function(err, validUser) {
+	console.log(req.session.id)
+	console.log(req.session.email)
+	console.log(req.session.name)
+	User.findOne({'email':req.session.email}).populate('user_profile').exec(function(err, validUser) {
+		console.log(validUser);
+		if(err) {
+			console.log(err)
+		} else {
 			console.log(validUser);
-			if(err) {
-				console.log(err)
-			} else {
-				console.log(validUser);
-				res.render('user_profile', {validUser: validUser});
-			}
-		})
-	}
+			res.render('user_profile', {validUser: validUser});
+		}
+	})
 })
 
 app.post('/sign_up', function(req, res) {
-	User.findOne({'email:': req.body.email}, function(err, existingUser) {
+	User.findOne({'email': req.body.email}, function(err, existingUser) {
 		if(existingUser) {
-			console.log('this email has already been registered, try again')
+			console.log('this email has already been registered, try again');
+			res.redirect('/');
 		} else {
 			var newUser = new User({
 			name: req.body.name,

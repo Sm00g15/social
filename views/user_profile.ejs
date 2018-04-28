@@ -1,14 +1,48 @@
-<%include partials/header%>
+
 <html>
+
     <body>
-        <%include partials/logout%>
+        <%include partials/header%>
         <h1 id="profile_header">Profile</h1>
         <div id="user_profile_div">
             <div class="profile_info" id="profile_picture_div">
-                <h2>Name: < %=user.name%></h2>
-<!--                 <h4>Location: <  %=user.user_profile.location%></h4>
-                <img src="/profile_images/< %=user.user_profile.profile_images%>" alt=""> -->
+                <h2>Name: <%=validUser.name%></h2>
+                <h2>Location: <%=validUser.user_profile.location%></h2>
+                <img src="/profile_images/<%=validUser.user_profile.profile_pic%>" alt="">
             </div>
+            <div class="profile_info" id="interests">
+                <h3>About Me</h3>
+                <p><%=validUser.user_profile.description%></p>
+            </div>
+            <div class="profile_info" id="interests">
+                <h3>Interests</h3>
+                <p><%=validUser.user_profile.interests%></p>
+            </div>
+        </div>
+
+        <div id="edit_profile_form_container">
+            <form action="" id="edit_profile_form">
+                <ul>
+                    <li>
+                        <label for="name">Name</label>
+                        <input type="text" name="name" value="<%=validUser.name%>">asdfsfda
+                    </li>
+                    <li>
+                        <label for="location">Location</label>
+                        <input type="text" name="location" value="<%=validUser.user_profile.location%>">
+                    </li>
+                    <li>
+                        <label for="description">Description</label>
+                        <textarea name="description" id="" cols="30" rows="4"><%=validUser.user_profile.description%></textarea>
+                    </li>
+                    <li>
+                        <label for="interests">Interests</label>
+                        <textarea name="interests" id="" cols="30" rows="4"><%=validUser.user_profile.interests%></textarea>
+                    </li>
+                </ul>
+                <button id="save_profile_button">Save</button>
+                <button id="cancel_edit_profile">Cancel</button>
+            </form>
         </div>
     </body>
 </html>
