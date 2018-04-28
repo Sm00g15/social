@@ -16,26 +16,26 @@
 						<p><%=status.user_status%></p>
 					</li>
 					<h4><%=status.status_date%></h4>
-					<h4><%=status.name%></h4>
 				<%})%>
 			</ul>
 			<textarea name="" id="statuses_textarea" cols="50" rows="4"></textarea><br>
-			<button id="submit_status_button" onclick='submitStatus()' type="submit">Post Status</button>
+			<button id="submit_status_button" type="submit">Post Status</button>
 		</div>
 
 		<script>
-	function submitStatus() {
+
+	$("#submit_status_button").on('click', function() {
 		var textArea = document.querySelector('#statuses_textarea');
 		var data = textArea.value;
-		$.post("/user_status/create", {data: data}, function(error, data) {
-			if(err) {
-				alert(err);
-			}
-			JSON.stringify(data);
-			alert('Data: ' + data + "\nStatus: " + status)
-		});
-	};
-
+		$.ajax({
+		url: "/user_status/create",
+		method: "POST",
+		data: data,
+		success: function(data) {
+			$(".user_statuses").append("<li class=clearfix><img src=/profile_images/" + data[0].user_profile.profile_pic  + "><div class='poster_name'>" + data[0].name + "</div><p>" +  "</p></li>");
+		}
+		})
+	});
 </script>
 	</body>
 </html>

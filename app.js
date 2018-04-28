@@ -29,10 +29,10 @@ app.get('/', function(req, res) {
 
 app.get('/home', function(req, res) {
 	if(!req.session) {
-		console.log('nope')
+		console.log('No req.session at /home')
 	} else {
-	console.log('yup');
 	var user_statuses;
+	console.log(req.session.email)
 	UserStatus.find({}, function(err, statuses) {
 		user_statuses = statuses;
 		var name = req.session.name;
@@ -63,6 +63,9 @@ app.post('/sign_up', function(req, res) {
 })
 
 app.post('/login', function(req, res) {
+	if(!req.session) {
+		console.log('error with login')
+	} else {
 	var validUser = {
 		email: req.body.email,
 		password: req.body.password 
@@ -73,15 +76,15 @@ app.post('/login', function(req, res) {
 			req.session.id = validUser._id;
 			req.session.name = validUser.name;
 			req.session.cookie.expires = false;
-			console.log(validUser)
-			res.redirect('/home')
-		} else {
-			res.sendStatus(400);
+			console.log(validUser.email);
+			res.redirect('/home');
 		}
 	})
+	}
 });
 
 app.post('/user_status/create', function(req, res) {
+	console.log(req.session.email)
 	User.find({"email": req.session.email}, function(err, validUser) {
 		var user_status = new UserStatus({
 			"user_email": req.session.email,
@@ -92,8 +95,9 @@ app.post('/user_status/create', function(req, res) {
 		user_status.save(function(err, result) {
 			if(err) {
 				console.log('error with status creation')
-			}
+			} 
 		})
+		res.send(validUser);
 	})
 })
 
