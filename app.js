@@ -32,12 +32,27 @@ app.get('/home', function(req, res) {
 		console.log('No req.session at /home')
 	} else {
 	var user_statuses;
-	console.log(req.session.email)
 	UserStatus.find({}, function(err, statuses) {
 		user_statuses = statuses;
 		var name = req.session.name;
 	res.render('home', {name: name, user_statuses: user_statuses});
 	})
+	}
+})
+
+app.get('/user_profile', function(req, res) {
+	if(!req.session) {
+		console.log('no req.session at /user_profile')
+	} else {
+		User.findOne({'email:': req.session.email}, function(err, validUser) {
+			console.log(validUser);
+			if(err) {
+				console.log(err)
+			} else {
+				console.log(validUser);
+				res.render('user_profile', {validUser: validUser});
+			}
+		})
 	}
 })
 
@@ -84,20 +99,20 @@ app.post('/login', function(req, res) {
 });
 
 app.post('/user_status/create', function(req, res) {
-	console.log(req.session.email)
 	User.find({"email": req.session.email}, function(err, validUser) {
-		var user_status = new UserStatus({
-			"user_email": req.session.email,
+		console.log(validUser);
+		var status = new UserStatus({
 			"user_status": req.body.data,
+			"user_email": req.session.email,
 			"name": req.session.name,
 			"profile_pic": validUser[0].user_profile.profile_pic
 		})
-		user_status.save(function(err, result) {
+		status.save(function(err, result) {
 			if(err) {
 				console.log('error with status creation')
 			} 
 		})
-		res.send(validUser);
+		res.send(status);
 	})
 })
 
