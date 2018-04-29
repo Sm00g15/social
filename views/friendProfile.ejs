@@ -1,0 +1,21 @@
+<%include partials/header%>
+<html>
+	<body>
+		<%include partials/logout%>
+		<div id="user_profile_vist_div">
+            <div class="profile_info" id="profile_picture_div">
+                <h2 id="user-name">Name: <%=friendProfile.name%></h2>
+                <h2 id="user-location">Location: <%=friendProfile.user_profile.location%></h2>
+                <img src="/profile_images/<%=friendProfile.user_profile.profile_pic%>" alt="">
+            </div>
+            <div class="profile_info" id="about">
+                <h3>About Me</h3>
+                <p id="user-about"><%=friendProfile.user_profile.description%></p>
+            </div>
+            <div class="profile_info" id="interests">
+                <h3>Interests</h3>
+                <p id="user-interests"><%=friendProfile.user_profile.interests%></p>
+            </div>
+        </div>
+	</body>
+</html>

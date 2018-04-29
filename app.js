@@ -140,6 +140,22 @@ app.get('/friends', function(req, res) {
 	})
 })
 
+app.get('/user_profile/:id', function(req, res) {
+	if(req.session) {
+		User.find({"email": req.session.email}, function(err, user) {
+			var all_user_friends = user[0].friends; 
+			var request_profile_member_id = req.params.id;
+			all_user_friends.forEach(function(friend) {
+				if(friend._id = req.params.id) {
+					User.findOne({'_id': req.params.id}, function(err, friendProfile) {
+						res.render('friendProfile', {friendProfile: friendProfile})
+					})
+				}
+			})
+		})
+	}
+})
+
 app.post('/friend_request', function(req, res) {
 	if(req.session) {
 		User.find({'email': req.session.email}, function(err, sendingUser) {
