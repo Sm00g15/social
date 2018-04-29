@@ -4,6 +4,21 @@
         <%include partials/logout%>
         <button id="edit_profile_button">Edit</button>
         <h1 id="profile_header">Profile</h1>
+         <div class='user_friends_list_section'>
+            <h2>Friends</h2>
+            <ul>
+                <%validUser.friends.forEach(function(friend){%>
+                    <li>
+                        <div id="<%=friend._id%>" class="friend_request">
+                            <div class="friend_request_pic">
+                                <img src="/profile_images/<%=friend.profile_pic%>" alt="">
+                            </div>
+                            <span><%=friend.friend_name%></span><br>
+                        </div>
+                    </li>
+                <%})%>
+            </ul>
+        </div>
         <div id="user_profile_div">
             <div class="profile_info" id="profile_picture_div">
                 <h2 id="user-name">Name: <%=validUser.name%></h2>
@@ -48,6 +63,22 @@
                 <button id="cancel_edit_profile">Cancel</button>
             </form>
         </div>
+        <div class='friend_request_section'>
+            <h2>Pending Requests</h2>
+            <ul>
+                <%validUser.friend_requests.forEach(function(request){%>
+                    <li>
+                        <div id="<%=request._id%>" class="friend_request">
+                            <div class="friend_request_pic">
+                                <img src="/profile_images/<%=request.profile_pic%>" alt="">
+                            </div>
+                            <span><%=request.friend_name%></span><br>
+                            <button id="accept_friend_request">Accept</button>
+                        </div>
+                    </li>
+                <%})%>
+            </ul>
+        </div>
     <script>
         $("#save_profile_button").on('click', function(e) {
             e.preventDefault();
@@ -88,6 +119,15 @@
                 })
             }
         }
+
+        $("#accept_friend_request").on('click', function() {
+            var friend_member_id = $(this).parent().attr('id');
+            var data = friend_member_id; 
+            $.post('/accept_friend_request', {data: data}, function(response) {
+               console.log(response);
+            });
+            $(".friend_request").parent().remove();
+        })
     </script>
     </body>
 </html>

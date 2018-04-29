@@ -156,6 +156,27 @@ app.post('/friend_request', function(req, res) {
 	}
 })
 
+app.post('/accept_friend_request', function(req, res) {
+	if(req.session) {
+		User.find({'email': req.session.email}, function(err, user) {
+			if(err) {
+				console.log(err)
+			} else {
+				User.find({"_id": req.body.data}, function(err, acceptedFriendUser) {
+						user[0].update({$push: {"friends": {"_id": acceptedFriendUser[0]._id, "friend_name": acceptedFriendUser[0].name, "profile_pic": acceptedFriendUser[0].user_profile.profile_pic}}, $pull: {"friend_requests": {"_id": req.body.data}}}, function(err) {
+							console.log(err); 
+							});
+						acceptedFriendUser[0].update({$push: {"friends": {"_id": user[0]._id, "friend_name": user[0].name, "profile_pic": user[0].user_profile.profile_pic}}}, function(err, data) {
+							console.log(err);
+						});
+					console.log('you have accepted a friend request!');
+					});
+								  
+				}
+			});
+		}
+	});
+
 // app.post('/profile_pic/upload', function(req, res) {
 // 	if(req.session) {
 // 		var newImageData = JSON.stringify(req.body.imageData)
