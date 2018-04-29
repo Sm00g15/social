@@ -28,14 +28,6 @@
 	$("#submit_status_button").on('click', function() {
 		var textArea = document.querySelector('#statuses_textarea');
 		var data = textArea.value;
-		// $.ajax({
-		// url: "/user_status/create",
-		// method: "POST",
-		// data: data,
-		// success: function(data) {
-		// 	alert(data);
-		// }
-		// })
 		$.post('/user_status/create', {data: data}, function(data) {
 			$(".user_statuses").append("<li class=clearfix><img src=/profile_images/" + data.profile_pic  + "><div class='poster_name'>" + data.name + "</div><p>" + data.user_status +   "</p></li>");
 		})

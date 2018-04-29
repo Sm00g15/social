@@ -3,7 +3,9 @@ const app = express();
 const mongoose = require('mongoose').set('debug', true);
 const bodyParser = require('body-parser');
 const User = require('./models/users.js');
-const UserStatus = require('./models/user_status_model.js')
+const UserStatus = require('./models/user_status_model.js');
+const fs = require('fs');
+const shortid = require('shortid');
 
 mongoose.connect("mongodb://localhost/social");
 
@@ -41,10 +43,7 @@ app.get('/home', function(req, res) {
 })
 
 app.get('/user_profile', function(req, res) {
-	console.log(req.session.id)
-	console.log(req.session.email)
-	console.log(req.session.name)
-	User.findOne({'email':req.session.email}).populate('user_profile').exec(function(err, validUser) {
+	User.findOne({'email':req.session.email}, function(err, validUser) {
 		console.log(validUser);
 		if(err) {
 			console.log(err)
@@ -52,7 +51,7 @@ app.get('/user_profile', function(req, res) {
 			console.log(validUser);
 			res.render('user_profile', {validUser: validUser});
 		}
-	})
+	});	
 })
 
 app.post('/sign_up', function(req, res) {
@@ -91,7 +90,7 @@ app.post('/login', function(req, res) {
 			req.session.id = validUser._id;
 			req.session.name = validUser.name;
 			req.session.cookie.expires = false;
-			console.log(validUser.email);
+			console.log(validUser);
 			res.redirect('/home');
 		}
 	})
@@ -115,6 +114,55 @@ app.post('/user_status/create', function(req, res) {
 		res.send(status);
 	})
 })
+
+app.post('/user_profile/edit', function(req, res) {
+	if(req.session) {
+		User.findOne({"email": req.session.email}, function(err, user) {
+			console.log(user);
+			user.name = req.body.name;
+			user.user_profile.location = req.body.location;
+			user.user_profile.description = req.body.description;
+			user.user_profile.interests = req.body.interests;
+			user.save(function(err, user) {
+				if(err) {
+					console.log(err);
+				} else {
+					res.send(user)
+				}
+			});
+		})
+	}
+})
+
+app.get('/friends', function(req, res) {
+	User.find({"email": {$ne: req.session.email}},function(err, users) {
+		res.render('friends', {users: users})
+	})
+})
+
+// app.post('/profile_pic/upload', function(req, res) {
+// 	if(req.session) {
+// 		var newImageData = JSON.stringify(req.body.imageData)
+// 		console.log(newImageData)
+// 		// var user_profile_image = "profile_images/" + shortid.generate() + "." + newImageData.image_type
+// 		// fs.writeFile("/profile_images/" + user_profile_image, new Buffer(newImageData, "base64"), function(err) {
+// 		// 	if(!err) {
+// 		// 		User.findOne({"email": req.session.email}, function(err, user) {
+// 		// 			user.user_profile.profile_pic = user_profile_image;
+// 		// 			user.save(function(err, updatedUser) {
+// 		// 				if(err) {
+// 		// 					console.log(err)
+// 		// 				} else {
+// 		// 					UserStatus.update({"user_email": req.session.email}, {"profile_pic": user_profile_image}, function(err, user) {
+// 		// 						console.log(user_profile_image);
+// 		// 					})
+// 		// 				}
+// 		// 			})
+// 		// 		})
+// 		// 	}
+// 		// })
+// 	}
+// })
 
 app.post('/logout', function(req, res) {
 	req.session.destroy();

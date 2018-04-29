@@ -1,48 +1,93 @@
-
+<%include partials/header%>
 <html>
-
     <body>
-        <%include partials/header%>
+        <%include partials/logout%>
+        <button id="edit_profile_button">Edit</button>
         <h1 id="profile_header">Profile</h1>
         <div id="user_profile_div">
             <div class="profile_info" id="profile_picture_div">
-                <h2>Name: <%=validUser.name%></h2>
-                <h2>Location: <%=validUser.user_profile.location%></h2>
+                <h2 id="user-name">Name: <%=validUser.name%></h2>
+                <h2 id="user-location">Location: <%=validUser.user_profile.location%></h2>
                 <img src="/profile_images/<%=validUser.user_profile.profile_pic%>" alt="">
             </div>
-            <div class="profile_info" id="interests">
+            <div class="profile_info" id="about">
                 <h3>About Me</h3>
-                <p><%=validUser.user_profile.description%></p>
+                <p id="user-about"><%=validUser.user_profile.description%></p>
             </div>
             <div class="profile_info" id="interests">
                 <h3>Interests</h3>
-                <p><%=validUser.user_profile.interests%></p>
+                <p id="user-interests"><%=validUser.user_profile.interests%></p>
             </div>
         </div>
 
-        <div id="edit_profile_form_container">
+        <div style="display: none" id="edit_profile_form_container">
             <form action="" id="edit_profile_form">
                 <ul>
                     <li>
                         <label for="name">Name</label>
-                        <input type="text" name="name" value="<%=validUser.name%>">asdfsfda
+                        <input type="text" name="name" id="user-name" value="<%=validUser.name%>">
                     </li>
                     <li>
                         <label for="location">Location</label>
-                        <input type="text" name="location" value="<%=validUser.user_profile.location%>">
+                        <input type="text" name="location" id="user-location" value="<%=validUser.user_profile.location%>">
                     </li>
                     <li>
                         <label for="description">Description</label>
-                        <textarea name="description" id="" cols="30" rows="4"><%=validUser.user_profile.description%></textarea>
+                        <textarea name="description" id="user-about" cols="30" rows="4"><%=validUser.user_profile.description%></textarea>
                     </li>
                     <li>
                         <label for="interests">Interests</label>
-                        <textarea name="interests" id="" cols="30" rows="4"><%=validUser.user_profile.interests%></textarea>
+                        <textarea name="interests" id="user-interests" cols="30" rows="4"><%=validUser.user_profile.interests%></textarea>
+                    </li>
+                    <li>
+                        <label for="profile_pic">Profile Pic</label>
+                        <input type="file" onchange="uploadProfileImage()" id="upload_profile_pic">
                     </li>
                 </ul>
                 <button id="save_profile_button">Save</button>
                 <button id="cancel_edit_profile">Cancel</button>
             </form>
         </div>
+    <script>
+        $("#save_profile_button").on('click', function(e) {
+            e.preventDefault();
+            $.ajax({
+                method: "POST",
+                url: "/user_profile/edit",
+                data: $('#edit_profile_form').serialize(),
+                success: function(data) {
+                $("#user-name").text("Name: " + data.name);
+                $("#user-location").text("Location: " + data.user_profile.location);
+                $("#user-about").text(data.user_profile.description);
+                $("#user-interests").text(data.user_profile.interests);
+                 $("#edit_profile_form_container").hide();
+                }
+            })
+        })
+
+        $("#edit_profile_button").on('click', function() {
+            $("#edit_profile_form_container").show();
+        })
+
+        $("#cancel_edit_profile").on('click', function(e) {
+            e.preventDefault();
+            $("#edit_profile_form_container").hide();
+        })
+
+        function uploadProfileImage() {
+            var image_to_upload = $("#upload_profile_pic")[0].files[0];
+            var reader = new FileReader();
+            reader.readAsDataURL(image_to_upload);
+            reader.onload = function() {
+                var imageData = {"image_data": reader.result.split(',')[1], "image_type": image_to_upload.type.split('/')[1]};
+                var data = JSON.stringify(imageData);
+                $.post('/profile_pic/upload', {data: data}, function(data) {
+                    alert(data);
+                    // $(".profile_info img").remove();
+                    // $("#profile_picture_div").append("<img src=/profile_images/" + data + ">");
+                })
+            }
+        }
+    </script>
     </body>
 </html>
