@@ -13,4 +13,14 @@
 		</div>
 	<%})%>
 </body>
+<script>
+	$(".request_button").on('click', function() {
+		var clicked_button = $(this);
+		var data = clicked_button.attr('id');
+		$.post('/friend_request', {data: data}, function(response) {
+			alert(response)
+			clicked_button.closest('.potential_friend').remove();
+		})
+	})
+</script>
 </html>

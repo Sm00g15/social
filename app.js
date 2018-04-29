@@ -140,6 +140,22 @@ app.get('/friends', function(req, res) {
 	})
 })
 
+app.post('/friend_request', function(req, res) {
+	if(req.session) {
+		User.find({'email': req.session.email}, function(err, sendingUser) {
+			if(err) {
+				console.log(err)
+			} else {
+				User.find({"_id": req.body.data}, function(err, potentialFriend) {
+					potentialFriend[0].update({$push: {"friend_requests": {"_id": sendingUser[0]._id, "friend_name": sendingUser[0].name, "profile_pic": sendingUser[0].user_profile.profile_pic}}}, function(err) {
+						res.send(JSON.stringify(potentialFriend));
+					})
+				})
+			}
+		})
+	}
+})
+
 // app.post('/profile_pic/upload', function(req, res) {
 // 	if(req.session) {
 // 		var newImageData = JSON.stringify(req.body.imageData)

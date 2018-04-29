@@ -12,8 +12,8 @@ const userSchema = new mongoose.Schema({
 	name: {type: String},
 	email: {type: String},
 	password: {type: String},
-	friends: [{"member_id": String, "friend_name": String, "profile_pic": String}],
-	friend_requests: [{"member_id": String,"friend_name": String,"profile_pic": String}],
+	friends: [{"_id": String, "friend_name": String, "profile_pic": String}],
+	friend_requests: [{"_id": String,"friend_name": String,"profile_pic": String}],
 	user_profile: userProfileSchema,
 }, {collection: "User"});
 
