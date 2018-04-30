@@ -15,6 +15,7 @@
                             </div>
                             <span><%=friend.friend_name%></span><br>
                             <button type="button" onclick="window.location.href ='/user_profile/<%=friend._id%>'">Go To Profile</button>
+                            <button id="<%=friend._id%>" class="chat_button">Chat</button>
                         </div>
                     </li>
                 <%})%>
@@ -80,7 +81,10 @@
                 <%})%>
             </ul>
         </div>
+        <div id="chat_section_wrapper"></div>
     <script>
+        var socket = io();
+        socket.emit('attach_user_info', {"_id": "<%=validUser._id%>", "user_name": "<%=validUser.name%>"})
         $("#save_profile_button").on('click', function(e) {
             e.preventDefault();
             $.ajax({
@@ -128,6 +132,31 @@
                console.log(response);
             });
             $(".friend_request").parent().remove();
+        });
+
+        $('.chat_button').on('click', function() {
+            var chat_box = `
+            <div class="chat_section">
+                <div id="chat_title_section">
+                    <span>Node Connect Chat</span>
+                    <div class="chat_close">
+                        <img src="/images/node_connect_close.png" alt="" />
+                    </div>
+                </div>
+                <div class="all_chat_messages">
+                </div>
+                <div id="send_message">
+                    <input type="text" id="send_message_input" placeholder="Send Message"/>
+                </div>
+            </div>
+            `
+        $('#chat_section_wrapper').append(chat_box)
+        })
+        $(document).on('click', ".chat_close", function() {
+            $(".chat_section").remove();
+        })
+        socket.on('message_from_server', function(received_msg) {
+            console.log(JSON.stringify(received_msg.msg));
         })
     </script>
     </body>

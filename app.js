@@ -1,3 +1,4 @@
+/*eslint-env node */
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose').set('debug', true);
@@ -6,6 +7,9 @@ const User = require('./models/users.js');
 const UserStatus = require('./models/user_status_model.js');
 const fs = require('fs');
 const shortid = require('shortid');
+const http = require('http').Server(app)
+const io = require('socket.io')(http);
+
 
 mongoose.connect("mongodb://localhost/social");
 
@@ -27,6 +31,26 @@ app.use(require("express-session")({
 
 app.get('/', function(req, res) {
 	res.render('landing')
+})
+
+io.on('connection', function(socket) {
+	socket.on('attach_user_info', function(user_info) {
+		socket._id = user_info._id;
+		socket.user_name = user_info.user_name;
+		console.log("socket", socket);
+	})
+	socket.on('message_from_client', function(usr_msg) {
+		console.log(usr_msg)
+		console.log(usr_msg.friend_id)
+		var all_connected_clients = io.sockets.connected;
+		for(var socket_id in all_connected_clients) {
+			if(all_connected_clients[socket_id]._id === usr_msg.friend_id){
+				var message_object = {"msg": usr_msg.msg, "user_name": socket.user_name};
+			all_connected_clients[socket_id].emit('message_from_server', message_object);
+			break;
+		}
+	}
+	})
 })
 
 app.get('/home', function(req, res) {
@@ -222,6 +246,6 @@ app.post('/logout', function(req, res) {
 	res.redirect('/')
 })
 
-app.listen(3000, function(req, res) {
+http.listen(3000, function(req, res) {
 	console.log('social network running')
 })
