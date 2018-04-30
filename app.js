@@ -40,8 +40,6 @@ io.on('connection', function(socket) {
 		console.log("socket", socket);
 	})
 	socket.on('message_from_client', function(usr_msg) {
-		console.log(usr_msg)
-		console.log(usr_msg.friend_id)
 		var all_connected_clients = io.sockets.connected;
 		for(var socket_id in all_connected_clients) {
 			if(all_connected_clients[socket_id]._id === usr_msg.friend_id){
